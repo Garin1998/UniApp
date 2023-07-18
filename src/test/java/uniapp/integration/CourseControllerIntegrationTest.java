@@ -1,41 +1,44 @@
-package uniapp.unit;
+package uniapp.integration;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.parsing.Parser;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.jdbc.Sql;
 import uniapp.controllers.requests.CourseReq;
-import uniapp.controllers.responses.GenericSuccessRes;
-import uniapp.models.dto.CourseDto;
-import uniapp.models.dto.LecturerDto;
+import uniapp.repositories.CourseRepository;
+import uniapp.repositories.LecturerRepository;
 import uniapp.services.CourseService;
 
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static uniapp.constants.ControllerPathConstants.COURSE_REQ_URL;
 import static uniapp.constants.ResponseCourseMessages.*;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-class CourseControllerUnitTest {
+class CourseControllerIntegrationTest {
 
     @LocalServerPort
     int port;
 
-    @MockBean
+    @Autowired
     CourseService courseService;
+
+    @Autowired
+    CourseRepository courseRepository;
+    @Autowired
+    private LecturerRepository lecturerRepository;
 
     @BeforeEach
     void setUp() {
@@ -43,47 +46,40 @@ class CourseControllerUnitTest {
         RestAssured.baseURI = "http://localhost:" + port;
         RestAssured.basePath = COURSE_REQ_URL;
         RestAssured.port = port;
-        RestAssured.defaultParser = Parser.JSON;
+
+    }
+
+    @AfterEach
+    void cleanUpEach() {
+
+        courseRepository.deleteAll();
+        lecturerRepository.deleteAll();
 
     }
 
     @Test
+    @Sql({"/import_lecturer.sql", "/import_course.sql"})
     void whenProvidedIdIsValidThenReturnCourseAndReturn200() throws JSONException {
 
-        UUID courseId = UUID.randomUUID();
-        UUID lecturerId = UUID.randomUUID();
-
-        LecturerDto lecturerDto = LecturerDto.builder()
-                .id(lecturerId)
-                .firstName("Jan")
-                .lastName("Nowak")
-                .build();
-        CourseDto courseDto = CourseDto.builder()
-                .id(courseId)
-                .name("Java Programming")
-                .ects(5)
-                .lecturer(lecturerDto)
-                .build();
+        String lecturerId = "d62a2265-4f9b-41a0-8d3b-e574f57f0d3e";
+        String courseId = "e98b9f76-62ff-42ab-b370-ded7e0a0b85f";
 
         JSONObject lecturerDtoAsExpectedJson = new JSONObject();
         lecturerDtoAsExpectedJson
-                .put("id", lecturerId.toString())
+                .put("id", lecturerId)
                 .put("firstName", "Jan")
                 .put("lastName", "Nowak");
 
         JSONObject expectedResponse = new JSONObject();
         expectedResponse
-                .put("id", courseDto.id().toString())
-                .put("name", courseDto.name())
-                .put("ects", courseDto.ects())
+                .put("id", courseId)
+                .put("name", "Java Programming")
+                .put("ects", 5)
                 .put("lecturer", lecturerDtoAsExpectedJson);
-
-
-        when(courseService.getCourse(courseId)).thenReturn(courseDto);
 
         String response =
         given()
-                .param("id", courseId.toString())
+                .param("id", courseId)
         .when()
                 .get()
         .then()
@@ -94,25 +90,19 @@ class CourseControllerUnitTest {
 
         JSONObject actualResponse = new JSONObject(response);
         JSONAssert.assertEquals(expectedResponse, actualResponse, false);
-
-        verify(courseService).getCourse(courseId);
-
     }
 
     @Test
+    @Sql("/import_lecturer.sql")
     void whenCourseIsValidThenAddCourseAndReturn200() {
 
-        UUID lecturerId = UUID.randomUUID();
+        String lecturerId = "d62a2265-4f9b-41a0-8d3b-e574f57f0d3e";
 
         CourseReq request = CourseReq.builder()
                 .name("Java Programming")
                 .ects(5)
-                .lecturerId(lecturerId)
+                .lecturerId(UUID.fromString(lecturerId))
                 .build();
-
-        GenericSuccessRes expectedResponse = new GenericSuccessRes(COURSE_SUCCESS_ADD);
-
-        when(courseService.addCourse(request)).thenReturn(expectedResponse);
 
         given()
                 .contentType(ContentType.JSON)
@@ -123,57 +113,46 @@ class CourseControllerUnitTest {
                 .statusCode(HttpStatus.OK.value())
                 .body("message", equalTo(COURSE_SUCCESS_ADD));
 
-        verify(courseService).addCourse(request);
-
     }
 
     @Test
+    @Sql({"/import_lecturer.sql", "/import_course.sql"})
     void whenProvidedIdAndLecturerBodyIsValidThenEditLecturerAndReturn200() {
 
-        UUID id = UUID.randomUUID();
-        GenericSuccessRes expectedResponse = new GenericSuccessRes(COURSE_SUCCESS_EDIT);
-
-        UUID lecturerId = UUID.randomUUID();
+        String courseId = "e98b9f76-62ff-42ab-b370-ded7e0a0b85f";
+        String lecturerId = "d62a2265-4f9b-41a0-8d3b-e574f57f0d3e";
 
         CourseReq request = CourseReq.builder()
                 .name("Java Programming")
                 .ects(10)
-                .lecturerId(lecturerId)
+                .lecturerId(UUID.fromString(lecturerId))
                 .build();
 
-        when(courseService.editCourse(id, request)).thenReturn(expectedResponse);
-
         given()
-                .param("id", id.toString())
+                .param("id", courseId)
                 .contentType("application/json")
                 .body(request)
-                .when()
+        .when()
                 .put()
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("message", equalTo(COURSE_SUCCESS_EDIT));
 
-        verify(courseService).editCourse(id, request);
-
     }
 
     @Test
+    @Sql({"/import_lecturer.sql", "/import_course.sql"})
     void whenProvidedIdIsValidThenDeleteLecturerAndReturn200() {
 
-        UUID id = UUID.randomUUID();
-        GenericSuccessRes successResponse = new GenericSuccessRes(COURSE_SUCCESS_DELETE);
-
-        when(courseService.deleteCourse(id)).thenReturn(successResponse);
+        String courseId = "e98b9f76-62ff-42ab-b370-ded7e0a0b85f";
 
         given()
-                .param("id", id.toString())
+                .param("id", courseId)
         .when()
                 .delete()
         .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("message", equalTo(COURSE_SUCCESS_DELETE));
-
-        verify(courseService).deleteCourse(id);
 
     }
 

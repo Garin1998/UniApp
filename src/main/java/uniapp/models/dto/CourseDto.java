@@ -1,7 +1,6 @@
 package uniapp.models.dto;
 
 import lombok.Builder;
-import uniapp.models.entities.Lecturer;
 
 import java.util.UUID;
 
