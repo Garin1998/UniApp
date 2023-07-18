@@ -1,18 +1,32 @@
 package uniapp.models.dto.mappers.implementations;
 
-import uniapp.models.Student;
-import uniapp.models.dto.StudentDto;
+import org.springframework.stereotype.Component;
+import uniapp.models.Lecturer;
+import uniapp.models.dto.LecturerDto;
 import uniapp.models.dto.mappers.LecturerMapper;
 
+@Component
 public class BasicLecturerMapper implements LecturerMapper {
 
     @Override
-    public Student dtoToEntity(StudentDto dto) {
-        return null;
+    public Lecturer dtoToEntity(LecturerDto dto) {
+
+        return Lecturer.builder()
+                .id(dto.id())
+                .firstName(dto.firstName())
+                .lastName(dto.lastName())
+                .build();
+
     }
 
     @Override
-    public StudentDto entityToDto(Student entity) {
-        return null;
+    public LecturerDto entityToDto(Lecturer entity) {
+
+        return LecturerDto.builder()
+                .id(entity.getId())
+                .firstName(entity.getFirstName())
+                .lastName(entity.getLastName())
+                .build();
+
     }
 }

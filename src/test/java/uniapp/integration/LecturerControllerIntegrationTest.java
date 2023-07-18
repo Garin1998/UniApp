@@ -1,37 +1,38 @@
-package uniapp.unit;
+package uniapp.integration;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.jdbc.Sql;
 import uniapp.controllers.requests.LecturerReq;
-import uniapp.controllers.responses.GenericSuccessRes;
-import uniapp.models.dto.LecturerDto;
+import uniapp.repositories.LecturerRepository;
 import uniapp.services.LecturerService;
-
-import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static uniapp.constants.ControllerPathConstants.LECTURER_REQ_URL;
+import static uniapp.constants.ControllerPathConstants.STUDENT_REQ_URL;
 import static uniapp.constants.ResponseLecturerMessages.*;
+import static uniapp.constants.ResponseLecturerMessages.LECTURER_SUCCESS_DELETE;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-class LecturerControllerTest {
+class LecturerControllerIntegrationTest {
 
     @LocalServerPort
     int port;
 
-    @MockBean
+    @Autowired
     LecturerService lecturerService;
+
+    @Autowired
+    LecturerRepository lecturerRepository;
 
     @BeforeEach
     void setUp() {
@@ -42,29 +43,28 @@ class LecturerControllerTest {
 
     }
 
+    @AfterEach
+    void cleanUpEach() {
+
+        lecturerRepository.deleteAll();
+
+    }
+
     @Test
+    @Sql("/import_lecturer.sql")
     void whenProvidedIdIsValidThenReturnLecturerAndReturn200() {
 
-        UUID id = UUID.randomUUID();
-        LecturerDto lecturerDto = LecturerDto.builder()
-                .id(id)
-                .firstName("Jan")
-                .lastName("Kowalski")
-                .build();
-
-        when(lecturerService.getLecturer(id)).thenReturn(ResponseEntity.ok(lecturerDto));
+        String id = "d62a2265-4f9b-41a0-8d3b-e574f57f0d3e";
 
         given()
-                .param("id", id.toString())
-                .when()
-                .get().prettyPeek()
-                .then()
+                .param("id", id)
+        .when()
+                .get()
+        .then()
                 .statusCode(HttpStatus.OK.value())
-                .body("id", equalTo(id.toString()))
+                .body("id", equalTo(id))
                 .body("firstName", equalTo("Jan"))
-                .body("lastName", equalTo("Kowalski"));
-
-        verify(lecturerService).getLecturer(id);
+                .body("lastName", equalTo("Nowak"));
 
     }
 
@@ -77,68 +77,55 @@ class LecturerControllerTest {
                         .lastName("Kowalski")
                         .build();
 
-        GenericSuccessRes expectedResponse = new GenericSuccessRes(LECTURER_SUCCESS_ADD);
-
-        when(lecturerService.addLecturer(request)).thenReturn(ResponseEntity.ok(expectedResponse));
-
         given()
                 .contentType(ContentType.JSON)
                 .body(request)
-                .when()
+        .when()
                 .post()
-                .then()
+        .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("message", equalTo(LECTURER_SUCCESS_ADD));
-
-        verify(lecturerService).addLecturer(request);
 
     }
 
     @Test
+    @Sql("/import_lecturer.sql")
     void whenProvidedIdAndLecturerBodyIsValidThenEditLecturerAndReturn200() {
 
-        UUID id = UUID.randomUUID();
-        GenericSuccessRes expectedResponse = new GenericSuccessRes(LECTURER_SUCCESS_EDIT);
+        String id = "d62a2265-4f9b-41a0-8d3b-e574f57f0d3e";
 
         LecturerReq request =
                 LecturerReq.builder()
                         .firstName("Jan")
-                        .lastName("Nowak")
+                        .lastName("Kowalski")
                         .build();
 
-        when(lecturerService.editLecturer(id, request)).thenReturn(ResponseEntity.ok(expectedResponse));
-
         given()
-                .param("id", id.toString())
+                .param("id", id)
                 .contentType("application/json")
                 .body(request)
-                .when()
+        .when()
                 .put()
-                .then()
+        .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("message", equalTo(LECTURER_SUCCESS_EDIT));
-
-        verify(lecturerService).editLecturer(id, request);
 
     }
 
     @Test
+    @Sql("/import_lecturer.sql")
     void whenProvidedIdIsValidThenDeleteLecturerAndReturn200() {
 
-        UUID id = UUID.randomUUID();
-        GenericSuccessRes successResponse = new GenericSuccessRes(LECTURER_SUCCESS_DELETE);
-
-        when(lecturerService.deleteLecturer(id)).thenReturn(ResponseEntity.ok(successResponse));
+        String id = "d62a2265-4f9b-41a0-8d3b-e574f57f0d3e";
 
         given()
-                .param("id", id.toString())
-                .when()
+                .param("id", id)
+        .when()
                 .delete()
-                .then()
+        .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("message", equalTo(LECTURER_SUCCESS_DELETE));
 
-        verify(lecturerService).deleteLecturer(id);
-
     }
+
 }

@@ -1,37 +1,37 @@
-package uniapp.unit;
+package uniapp.integration;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.jdbc.Sql;
 import uniapp.controllers.requests.StudentReq;
-import uniapp.controllers.responses.GenericSuccessRes;
-import uniapp.models.dto.StudentDto;
+import uniapp.repositories.StudentRepository;
 import uniapp.services.StudentService;
-
-import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static uniapp.constants.ControllerPathConstants.STUDENT_REQ_URL;
 import static uniapp.constants.ResponseStudentMessages.*;
+import static uniapp.constants.ResponseStudentMessages.STUDENT_SUCCESS_DELETE;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-class StudentControllerTest {
+class StudentControllerIntegrationTest {
 
     @LocalServerPort
     int port;
 
-    @MockBean
+    @Autowired
     StudentService studentService;
+
+    @Autowired
+    StudentRepository studentRepository;
 
     @BeforeEach
     void setUp() {
@@ -42,32 +42,29 @@ class StudentControllerTest {
 
     }
 
+    @AfterEach
+    void cleanUpEach() {
+
+        studentRepository.deleteAll();
+
+    }
+
     @Test
+    @Sql({"/import_student.sql"})
     void whenProvidedIdIsValidThenReturnStudentAndReturn200() {
 
-        UUID id = UUID.randomUUID();
-        StudentDto studentDto =
-                StudentDto.builder()
-                        .id(id)
-                        .firstName("Jan")
-                        .lastName("Kowalski")
-                        .term(1)
-                        .build();
-
-        when(studentService.getStudent(id)).thenReturn(ResponseEntity.ok(studentDto));
+        String id = "a499037f-22b4-4d31-9fd1-e549e7c9ccb4";
 
         given()
-                .param("id", id.toString())
+                .param("id", id)
         .when()
-                .get().prettyPeek()
+                .get()
         .then()
                 .statusCode(HttpStatus.OK.value())
-                .body("id", equalTo(id.toString()))
+                .body("id", equalTo(id))
                 .body("firstName", equalTo("Jan"))
                 .body("lastName", equalTo("Kowalski"))
                 .body("term", equalTo(1));
-
-        verify(studentService).getStudent(id);
 
     }
 
@@ -81,28 +78,22 @@ class StudentControllerTest {
                         .term(1)
                         .build();
 
-        GenericSuccessRes expectedResponse = new GenericSuccessRes(STUDENT_SUCCESS_ADD);
-
-        when(studentService.addStudent(request)).thenReturn(ResponseEntity.ok(expectedResponse));
-
         given()
                 .contentType(ContentType.JSON)
                 .body(request)
-        .when()
+                .when()
                 .post()
-        .then()
+                .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("message", equalTo(STUDENT_SUCCESS_ADD));
-
-        verify(studentService).addStudent(request);
 
     }
 
     @Test
+    @Sql({"/import_student.sql"})
     void whenProvidedIdAndStudentBodyIsValidThenEditStudentAndReturn200() {
 
-        UUID id = UUID.randomUUID();
-        GenericSuccessRes expectedResponse = new GenericSuccessRes(STUDENT_SUCCESS_EDIT);
+        String id = "a499037f-22b4-4d31-9fd1-e549e7c9ccb4";
 
         StudentReq request =
                 StudentReq.builder()
@@ -111,39 +102,32 @@ class StudentControllerTest {
                         .term(1)
                         .build();
 
-        when(studentService.editStudent(id, request)).thenReturn(ResponseEntity.ok(expectedResponse));
-
         given()
-                .param("id", id.toString())
+                .param("id", id)
                 .contentType("application/json")
                 .body(request)
-        .when()
+                .when()
                 .put()
-        .then()
+                .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("message", equalTo(STUDENT_SUCCESS_EDIT));
-
-        verify(studentService).editStudent(id, request);
 
     }
 
     @Test
+    @Sql({"/import_student.sql"})
     void whenProvidedIdIsValidThenDeleteStudentAndReturn200() {
 
-        UUID id = UUID.randomUUID();
-        GenericSuccessRes successResponse = new GenericSuccessRes(STUDENT_SUCCESS_DELETE);
-
-        when(studentService.deleteStudent(id)).thenReturn(ResponseEntity.ok(successResponse));
+        String id = "a499037f-22b4-4d31-9fd1-e549e7c9ccb4";
 
         given()
-                .param("id", id.toString())
+                .param("id", id)
                 .when()
                 .delete()
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("message", equalTo(STUDENT_SUCCESS_DELETE));
 
-        verify(studentService).deleteStudent(id);
-
     }
+
 }

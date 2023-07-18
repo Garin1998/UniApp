@@ -1,0 +1,1 @@
+INSERT INTO STUDENT ("ID", "FIRST_NAME", "LAST_NAME", "TERM") VALUES ('a499037f-22b4-4d31-9fd1-e549e7c9ccb4', 'Jan', 'Kowalski', 1)
