@@ -23,13 +23,17 @@ public class StudentController {
     @GetMapping(produces = "application/json")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<StudentDto> getStudentById(@RequestParam(name = "id") UUID uuid) {
+
         return ResponseEntity.ok(studentService.getStudent(uuid));
+
     }
 
     @PostMapping(consumes = "application/json", produces = "application/json")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<GenericSuccessRes> addStudent(@RequestBody StudentReq request) {
+
         return ResponseEntity.ok(studentService.addStudent(request));
+
     }
 
     @PutMapping(consumes = "application/json")
@@ -38,12 +42,16 @@ public class StudentController {
             @RequestParam(name = "id") UUID uuid,
             @RequestBody StudentReq request
     ) {
+
         return ResponseEntity.ok(studentService.editStudent(uuid, request));
+
     }
 
     @DeleteMapping(produces = "application/json")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<GenericSuccessRes> deleteStudent(@RequestParam(name = "id") UUID uuid) {
+
         return ResponseEntity.ok(studentService.deleteStudent(uuid));
+
     }
 }

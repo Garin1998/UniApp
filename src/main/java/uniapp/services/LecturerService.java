@@ -69,4 +69,5 @@ public class LecturerService {
         return new GenericSuccessRes(LECTURER_SUCCESS_DELETE);
 
     }
+
 }

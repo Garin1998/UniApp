@@ -1,7 +1,7 @@
 package uniapp.models.dto.mappers.implementations;
 
 import org.springframework.stereotype.Component;
-import uniapp.models.Student;
+import uniapp.models.entities.Student;
 import uniapp.models.dto.StudentDto;
 import uniapp.models.dto.mappers.StudentMapper;
 
@@ -31,4 +31,5 @@ public class BasicStudentMapper implements StudentMapper {
                 .build();
 
     }
+
 }

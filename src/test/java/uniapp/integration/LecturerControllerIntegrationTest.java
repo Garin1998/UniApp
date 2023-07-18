@@ -18,7 +18,6 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static uniapp.constants.ControllerPathConstants.LECTURER_REQ_URL;
-import static uniapp.constants.ControllerPathConstants.STUDENT_REQ_URL;
 import static uniapp.constants.ResponseLecturerMessages.*;
 import static uniapp.constants.ResponseLecturerMessages.LECTURER_SUCCESS_DELETE;
 

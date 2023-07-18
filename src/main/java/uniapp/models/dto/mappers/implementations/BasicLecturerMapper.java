@@ -1,7 +1,7 @@
 package uniapp.models.dto.mappers.implementations;
 
 import org.springframework.stereotype.Component;
-import uniapp.models.Lecturer;
+import uniapp.models.entities.Lecturer;
 import uniapp.models.dto.LecturerDto;
 import uniapp.models.dto.mappers.LecturerMapper;
 
@@ -29,4 +29,5 @@ public class BasicLecturerMapper implements LecturerMapper {
                 .build();
 
     }
+
 }

@@ -8,4 +8,5 @@ public class StudentNotFound extends UserNotFound {
     public StudentNotFound(String message) {
         super(message);
     }
+
 }

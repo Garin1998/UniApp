@@ -1,4 +1,4 @@
-package uniapp.models;
+package uniapp.models.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,18 +6,20 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "student")
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Student {
+public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    private String firstName;
-    private String lastName;
-    private int term;
+    private String name;
+    private int ects;
+    @OneToOne
+    @JoinColumn(name = "lecturer", referencedColumnName = "id")
+    private Lecturer lecturer;
+
 }

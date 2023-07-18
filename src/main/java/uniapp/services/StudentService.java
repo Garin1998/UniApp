@@ -72,4 +72,5 @@ public class StudentService {
         return new GenericSuccessRes(STUDENT_SUCCESS_DELETE);
 
     }
+
 }

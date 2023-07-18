@@ -23,13 +23,17 @@ public class LecturerController {
     @GetMapping(produces = "application/json")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<LecturerDto> getLecturerById(@RequestParam(name = "id") UUID id) {
+
         return ResponseEntity.ok(lecturerService.getLecturer(id));
+
     }
 
     @PostMapping(consumes = "application/json", produces = "application/json")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<GenericSuccessRes> addLecturer(@RequestBody LecturerReq request) {
+
         return ResponseEntity.ok(lecturerService.addLecturer(request));
+
     }
 
     @PutMapping(consumes = "application/json")
@@ -38,12 +42,16 @@ public class LecturerController {
             @RequestParam(name = "id") UUID id,
             @RequestBody LecturerReq request
     ) {
+
         return ResponseEntity.ok(lecturerService.editLecturer(id, request));
+
     }
 
     @DeleteMapping(produces = "application/json")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<GenericSuccessRes> deleteLecturer(@RequestParam(name = "id") UUID id) {
+
         return ResponseEntity.ok(lecturerService.deleteLecturer(id));
+
     }
 }

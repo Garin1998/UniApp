@@ -140,4 +140,5 @@ class LecturerControllerUnitTest {
         verify(lecturerService).deleteLecturer(id);
 
     }
+
 }

@@ -106,9 +106,9 @@ class StudentControllerIntegrationTest {
                 .param("id", id)
                 .contentType("application/json")
                 .body(request)
-                .when()
+        .when()
                 .put()
-                .then()
+        .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("message", equalTo(STUDENT_SUCCESS_EDIT));
 

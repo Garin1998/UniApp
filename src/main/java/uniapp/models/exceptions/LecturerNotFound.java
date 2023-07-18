@@ -9,4 +9,5 @@ public class LecturerNotFound extends UserNotFound {
     public LecturerNotFound(String message) {
         super(message);
     }
+
 }
