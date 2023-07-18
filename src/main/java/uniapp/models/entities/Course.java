@@ -3,6 +3,7 @@ package uniapp.models.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -21,5 +22,6 @@ public class Course {
     @OneToOne
     @JoinColumn(name = "lecturer", referencedColumnName = "id")
     private Lecturer lecturer;
-
+    @OneToMany(fetch = FetchType.LAZY ,mappedBy = "course")
+    Set<StudentCourse> students;
 }

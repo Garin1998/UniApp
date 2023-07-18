@@ -3,6 +3,7 @@ package uniapp.models.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -19,5 +20,7 @@ public class Student {
     private String firstName;
     private String lastName;
     private int term;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "student")
+    Set<StudentCourse> courses;
 
 }

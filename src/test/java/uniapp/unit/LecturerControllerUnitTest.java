@@ -56,7 +56,7 @@ class LecturerControllerUnitTest {
         given()
                 .param("id", id.toString())
         .when()
-                .get().prettyPeek()
+                .get()
         .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("id", equalTo(id.toString()))

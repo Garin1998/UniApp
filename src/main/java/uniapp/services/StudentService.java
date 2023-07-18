@@ -4,12 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uniapp.controllers.requests.StudentReq;
 import uniapp.controllers.responses.GenericSuccessRes;
+import uniapp.controllers.responses.StudentCourseRes;
+import uniapp.models.dto.StudentCourseDto;
 import uniapp.models.dto.StudentDto;
 import uniapp.models.dto.mappers.StudentMapper;
+import uniapp.models.entities.Student;
 import uniapp.models.exceptions.StudentNotFound;
 import uniapp.models.exceptions.UserNotFound;
 import uniapp.repositories.StudentRepository;
 
+import java.util.Set;
 import java.util.UUID;
 
 import static uniapp.constants.ResponseStudentMessages.*;
@@ -70,6 +74,12 @@ public class StudentService {
         studentRepository.deleteById(id);
 
         return new GenericSuccessRes(STUDENT_SUCCESS_DELETE);
+
+    }
+
+    public Set<StudentCourseRes> getAllStudentCoursesById(UUID id) {
+
+        return null;
 
     }
 

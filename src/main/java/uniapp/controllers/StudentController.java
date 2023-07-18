@@ -6,9 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uniapp.controllers.requests.StudentReq;
 import uniapp.controllers.responses.GenericSuccessRes;
+import uniapp.controllers.responses.StudentCourseRes;
 import uniapp.models.dto.StudentDto;
 import uniapp.services.StudentService;
 
+import java.util.Set;
 import java.util.UUID;
 
 import static uniapp.constants.ControllerPathConstants.STUDENT_REQ_URL;
@@ -22,9 +24,9 @@ public class StudentController {
 
     @GetMapping(produces = "application/json")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<StudentDto> getStudentById(@RequestParam(name = "id") UUID uuid) {
+    public ResponseEntity<StudentDto> getStudentById(@RequestParam(name = "id") UUID id) {
 
-        return ResponseEntity.ok(studentService.getStudent(uuid));
+        return ResponseEntity.ok(studentService.getStudent(id));
 
     }
 
@@ -39,19 +41,26 @@ public class StudentController {
     @PutMapping(consumes = "application/json")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<GenericSuccessRes> editStudent(
-            @RequestParam(name = "id") UUID uuid,
+            @RequestParam(name = "id") UUID id,
             @RequestBody StudentReq request
     ) {
 
-        return ResponseEntity.ok(studentService.editStudent(uuid, request));
+        return ResponseEntity.ok(studentService.editStudent(id, request));
 
     }
 
     @DeleteMapping(produces = "application/json")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<GenericSuccessRes> deleteStudent(@RequestParam(name = "id") UUID uuid) {
+    public ResponseEntity<GenericSuccessRes> deleteStudent(@RequestParam(name = "id") UUID id) {
 
-        return ResponseEntity.ok(studentService.deleteStudent(uuid));
+        return ResponseEntity.ok(studentService.deleteStudent(id));
+
+    }
+
+    @GetMapping(value = "/courses")
+    public ResponseEntity<Set<StudentCourseRes>> getAllStudentCourse(@RequestParam(name = "id") UUID id) {
+
+        return ResponseEntity.ok(studentService.getAllStudentCoursesById(id));
 
     }
 }

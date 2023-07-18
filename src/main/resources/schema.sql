@@ -23,9 +23,11 @@ CREATE TABLE IF NOT EXISTS course (
 );
 
 CREATE TABLE IF NOT EXISTS student_course (
+    id uuid NOT NULL,
     course_id uuid,
     student_id uuid,
     degree double precision NOT NULL,
+    CONSTRAINT student_course_pk PRIMARY KEY (id),
     CONSTRAINT student_course_course_fk FOREIGN KEY (course_id) REFERENCES course(id) ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT student_course_student_fk FOREIGN KEY (student_id) REFERENCES student(id) ON UPDATE CASCADE ON DELETE CASCADE
 );

@@ -2,18 +2,30 @@ package uniapp.unit;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import uniapp.controllers.requests.StudentReq;
 import uniapp.controllers.responses.GenericSuccessRes;
+import uniapp.controllers.responses.StudentCourseRes;
+import uniapp.models.dto.CourseDto;
+import uniapp.models.dto.LecturerDto;
+import uniapp.models.dto.StudentCourseDto;
 import uniapp.models.dto.StudentDto;
 import uniapp.services.StudentService;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -143,6 +155,89 @@ class StudentControllerUnitTest {
                 .body("message", equalTo(STUDENT_SUCCESS_DELETE));
 
         verify(studentService).deleteStudent(id);
+
+    }
+
+    @Test
+    void whenProvidedIdIsValidThenReturnAllStudentCoursesAndReturn200() throws JSONException {
+
+        UUID studentId = UUID.randomUUID();
+        UUID courseId = UUID.randomUUID();
+        UUID lecturerId = UUID.randomUUID();
+
+        LecturerDto lecturerDto = LecturerDto.builder()
+                .id(lecturerId)
+                .firstName("Jan")
+                .lastName("Nowak")
+                .build();
+
+        CourseDto firstCourseDto = CourseDto.builder()
+                .id(courseId)
+                .name("Java Programming")
+                .ects(5)
+                .lecturer(lecturerDto)
+                .build();
+
+        CourseDto secondCourseDto = CourseDto.builder()
+                .id(courseId)
+                .name("Python Programming")
+                .ects(5)
+                .lecturer(lecturerDto)
+                .build();
+
+        Set<StudentCourseRes> expectedResponse = new HashSet<>();
+
+        StudentCourseRes firstRes = StudentCourseRes.builder()
+                .id(UUID.randomUUID())
+                .courseDto(firstCourseDto)
+                .degree(5.0)
+                .build();
+
+        StudentCourseRes secondRes = StudentCourseRes.builder()
+                .id(UUID.randomUUID())
+                .courseDto(secondCourseDto)
+                .degree(4.0)
+                .build();
+
+        expectedResponse.add(firstRes);
+        expectedResponse.add(secondRes);
+
+        when(studentService.getAllStudentCoursesById(studentId)).thenReturn(expectedResponse);
+
+        String response =
+        given()
+                .param("id", studentId.toString())
+                .when()
+                .get("/courses")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract().response().asString();
+
+        JSONArray actualResponse = new JSONArray(response);
+        JSONArray expectedResponseAsJsonArray = new JSONArray();
+
+        for (StudentCourseRes studentCourse : expectedResponse) {
+
+            JSONObject lecturerDtoAsJson = new JSONObject();
+            lecturerDtoAsJson.put("id", studentCourse.courseDto().lecturer().id().toString());
+            lecturerDtoAsJson.put("firstName", studentCourse.courseDto().lecturer().firstName());
+            lecturerDtoAsJson.put("lastName", studentCourse.courseDto().lecturer().lastName());
+
+            JSONObject courseDtoAsJson = new JSONObject();
+            courseDtoAsJson.put("id", studentCourse.courseDto().id().toString());
+            courseDtoAsJson.put("name", studentCourse.courseDto().name());
+            courseDtoAsJson.put("ects", studentCourse.courseDto().ects());
+            courseDtoAsJson.put("lecturer", lecturerDtoAsJson);
+
+            expectedResponseAsJsonArray.put(new JSONObject()
+                    .put("id", studentCourse.id().toString())
+                    .put("course", courseDtoAsJson)
+                    .put("degree", studentCourse.degree()));
+        }
+
+        JSONAssert.assertEquals(expectedResponseAsJsonArray, actualResponse, false);
+
+        verify(studentService).getAllStudentCoursesById(studentId);
 
     }
 
