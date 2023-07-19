@@ -12,20 +12,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import uniapp.controllers.requests.StudentCourseReq;
 import uniapp.controllers.requests.StudentReq;
 import uniapp.controllers.responses.GenericSuccessRes;
 import uniapp.controllers.responses.StudentCourseRes;
 import uniapp.models.dto.CourseDto;
 import uniapp.models.dto.LecturerDto;
-import uniapp.models.dto.StudentCourseDto;
 import uniapp.models.dto.StudentDto;
 import uniapp.services.StudentService;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.IntStream;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -148,9 +146,9 @@ class StudentControllerUnitTest {
 
         given()
                 .param("id", id.toString())
-                .when()
+        .when()
                 .delete()
-                .then()
+        .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("message", equalTo(STUDENT_SUCCESS_DELETE));
 
@@ -207,9 +205,9 @@ class StudentControllerUnitTest {
         String response =
         given()
                 .param("id", studentId.toString())
-                .when()
+        .when()
                 .get("/courses")
-                .then()
+        .then()
                 .statusCode(HttpStatus.OK.value())
                 .extract().response().asString();
 
@@ -241,4 +239,82 @@ class StudentControllerUnitTest {
 
     }
 
+    @Test
+    void whenStudentCourseIsValidThenAddStudentCourseAndReturn200() {
+
+        UUID studentId = UUID.randomUUID();
+        UUID courseId = UUID.randomUUID();
+
+        StudentCourseReq request = StudentCourseReq.builder()
+                .studentId(studentId)
+                .courseId(courseId)
+                .degree(5.0)
+                .build();
+
+        when(studentService.addStudentCourseByStudentId(request))
+                .thenReturn(new GenericSuccessRes(STUDENT_COURSE_SUCCESS_ADD));
+
+        given()
+                .contentType("application/json")
+                .body(request)
+        .when()
+                .post("/courses")
+        .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("message", equalTo(STUDENT_COURSE_SUCCESS_ADD));
+
+        verify(studentService).addStudentCourseByStudentId(request);
+
+    }
+
+    @Test
+    void whenProvidedIdAndStudentBodyIsValidThenEditStudentCourseAndReturn200() {
+
+        UUID studentId = UUID.randomUUID();
+        UUID courseId = UUID.randomUUID();
+        UUID studentCourseId = UUID.randomUUID();
+
+        StudentCourseReq request = StudentCourseReq.builder()
+                .studentId(studentId)
+                .courseId(courseId)
+                .degree(2.0)
+                .build();
+
+        when(studentService.editStudentCourseByStudentCourseId(studentCourseId, request))
+                .thenReturn(new GenericSuccessRes(STUDENT_COURSE_SUCCESS_EDIT));
+
+        given()
+                .param("id", studentCourseId)
+                .contentType("application/json")
+                .body(request)
+        .when()
+                .put("/courses")
+        .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("message", equalTo(STUDENT_COURSE_SUCCESS_EDIT));
+
+        verify(studentService).editStudentCourseByStudentCourseId(studentCourseId, request);
+
+    }
+
+    @Test
+    void whenProvidedStudentCourseIdIsValidThenDeleteStudentCourseAndReturn200() {
+
+        UUID id = UUID.randomUUID();
+        GenericSuccessRes successResponse = new GenericSuccessRes(STUDENT_COURSE_SUCCESS_DELETE);
+
+        when(studentService.deleteStudentCourseByStudentCourseId(id)).thenReturn(successResponse);
+
+        given()
+                .param("id", id.toString())
+        .when()
+                .delete("/courses")
+        .then()
+                .statusCode(HttpStatus.OK.value())
+                .body("message", equalTo(STUDENT_COURSE_SUCCESS_DELETE));
+
+        verify(studentService).deleteStudentCourseByStudentCourseId(id);
+
+    }
+    
 }

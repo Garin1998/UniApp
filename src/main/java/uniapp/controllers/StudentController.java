@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import uniapp.controllers.requests.StudentCourseReq;
 import uniapp.controllers.requests.StudentReq;
 import uniapp.controllers.responses.GenericSuccessRes;
 import uniapp.controllers.responses.StudentCourseRes;
@@ -57,10 +58,42 @@ public class StudentController {
 
     }
 
-    @GetMapping(value = "/courses")
+    @GetMapping(value = "/courses", produces = "application/json")
+    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Set<StudentCourseRes>> getAllStudentCourse(@RequestParam(name = "id") UUID id) {
 
         return ResponseEntity.ok(studentService.getAllStudentCoursesById(id));
 
     }
+
+    @PostMapping(value = "/courses", consumes = "application/json", produces = "application/json")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<GenericSuccessRes> addStudentCourseByStudentId(
+            @RequestBody StudentCourseReq studentCourseReq
+    ) {
+
+        return ResponseEntity.ok(studentService.addStudentCourseByStudentId(studentCourseReq));
+
+    }
+
+    @PutMapping(value = "/courses", consumes = "application/json")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<GenericSuccessRes> editStudentCourseByStudentCourseId(
+            @RequestParam(name = "id") UUID id,
+            @RequestBody StudentCourseReq studentCourseReq
+    ) {
+
+        return ResponseEntity.ok(studentService.editStudentCourseByStudentCourseId(id, studentCourseReq));
+
+    }
+
+    @DeleteMapping(value = "/courses", produces = "application/json")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<GenericSuccessRes> deleteStudentCourseByStudentCourseId(@RequestParam(name = "id") UUID id) {
+
+        return ResponseEntity.ok(studentService.deleteStudentCourseByStudentCourseId(id));
+
+    }
+
+
 }

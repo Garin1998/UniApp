@@ -2,6 +2,7 @@ package uniapp.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import uniapp.controllers.requests.StudentCourseReq;
 import uniapp.controllers.requests.StudentReq;
 import uniapp.controllers.responses.GenericSuccessRes;
 import uniapp.controllers.responses.StudentCourseRes;
@@ -78,6 +79,25 @@ public class StudentService {
     }
 
     public Set<StudentCourseRes> getAllStudentCoursesById(UUID id) {
+
+        return null;
+
+    }
+
+    public GenericSuccessRes addStudentCourseByStudentId(StudentCourseReq studentCourseReq) {
+
+        return null;
+
+    }
+
+    public GenericSuccessRes editStudentCourseByStudentCourseId(UUID id, StudentCourseReq request) {
+
+        return null;
+
+    }
+
+
+    public GenericSuccessRes deleteStudentCourseByStudentCourseId(UUID id) {
 
         return null;
 
