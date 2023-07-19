@@ -17,5 +17,9 @@ spring:
       ddl-auto: none
 server:
   port: 8081
+
+springdoc:
+  api-docs:
+    version: openapi_3_1
   
 

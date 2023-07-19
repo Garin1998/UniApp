@@ -19,6 +19,7 @@
         <h2.version>2.2.220</h2.version>
         <rest-assured.version>5.3.0</rest-assured.version>
         <hamcrest.version>2.2</hamcrest.version>
+        <open-api.version>2.1.0</open-api.version>
     </properties>
     <dependencies>
         <dependency>
@@ -60,6 +61,11 @@
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest</artifactId>
             <version>${hamcrest.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${open-api.version}</version>
         </dependency>
     </dependencies>
 
