@@ -58,6 +58,7 @@ public class CourseService {
             Lecturer lecturer = lecturerRepository.findById(request.lecturerId()).orElseThrow(LecturerNotFound::new);
 
             CourseDto courseDto = CourseDto.builder()
+                    .id(id)
                     .name(request.name())
                     .ects(request.ects())
                     .lecturer(lecturerMapper.entityToDto(lecturer))

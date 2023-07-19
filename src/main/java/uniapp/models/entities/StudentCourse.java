@@ -1,14 +1,16 @@
 package uniapp.models.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class StudentCourse {
 
     @Id
@@ -23,6 +25,6 @@ public class StudentCourse {
     @JoinColumn(name = "course_id")
     Course course;
 
-    int degree;
+    double degree;
 
 }

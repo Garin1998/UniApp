@@ -89,9 +89,11 @@ public class StudentController {
 
     @DeleteMapping(value = "/courses", produces = "application/json")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<GenericSuccessRes> deleteStudentCourseByStudentCourseId(@RequestParam(name = "id") UUID id) {
+    public ResponseEntity<GenericSuccessRes> deleteStudentCourseByStudentCourseId(
+            @RequestParam(name = "id") UUID studentCourseId
+    ) {
 
-        return ResponseEntity.ok(studentService.deleteStudentCourseByStudentCourseId(id));
+        return ResponseEntity.ok(studentService.deleteStudentCourseByStudentCourseId(studentCourseId));
 
     }
 

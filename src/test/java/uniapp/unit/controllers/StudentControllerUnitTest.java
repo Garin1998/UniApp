@@ -1,4 +1,4 @@
-package uniapp.unit;
+package uniapp.unit.controllers;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -300,21 +300,22 @@ class StudentControllerUnitTest {
     @Test
     void whenProvidedStudentCourseIdIsValidThenDeleteStudentCourseAndReturn200() {
 
-        UUID id = UUID.randomUUID();
+        UUID studentCourseId = UUID.randomUUID();
+
         GenericSuccessRes successResponse = new GenericSuccessRes(STUDENT_COURSE_SUCCESS_DELETE);
 
-        when(studentService.deleteStudentCourseByStudentCourseId(id)).thenReturn(successResponse);
+        when(studentService.deleteStudentCourseByStudentCourseId(studentCourseId)).thenReturn(successResponse);
 
         given()
-                .param("id", id.toString())
+                .param("id", studentCourseId.toString())
         .when()
                 .delete("/courses")
         .then()
                 .statusCode(HttpStatus.OK.value())
                 .body("message", equalTo(STUDENT_COURSE_SUCCESS_DELETE));
 
-        verify(studentService).deleteStudentCourseByStudentCourseId(id);
+        verify(studentService).deleteStudentCourseByStudentCourseId(studentCourseId);
 
     }
-    
+
 }

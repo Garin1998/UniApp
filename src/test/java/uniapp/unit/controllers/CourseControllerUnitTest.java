@@ -1,4 +1,4 @@
-package uniapp.unit;
+package uniapp.unit.controllers;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
