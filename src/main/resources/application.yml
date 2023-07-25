@@ -21,5 +21,8 @@ server:
 springdoc:
   api-docs:
     version: openapi_3_1
-  
 
+security:
+  jwt:
+    secret-key: 90d2575217ed1e2422a563b193027d55ad98a1407def3067f71c1a8e54858f81
+    expiration: 86400000 # a day

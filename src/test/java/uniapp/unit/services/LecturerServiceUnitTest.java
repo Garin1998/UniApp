@@ -4,13 +4,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import uniapp.controllers.requests.LecturerReq;
 import uniapp.models.dto.LecturerDto;
 import uniapp.models.dto.mappers.LecturerMapper;
 import uniapp.models.entities.Lecturer;
 import uniapp.repositories.LecturerRepository;
-import uniapp.services.LecturerService;
+import uniapp.services.implementations.BasicLecturerService;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -23,7 +22,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class LecturerServiceUnitTest {
 
     @InjectMocks
-    LecturerService lecturerService;
+    BasicLecturerService lecturerService;
 
     @Mock
     LecturerRepository lecturerRepository;

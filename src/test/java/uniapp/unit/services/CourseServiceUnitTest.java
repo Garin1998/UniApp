@@ -13,7 +13,7 @@ import uniapp.models.entities.Course;
 import uniapp.models.entities.Lecturer;
 import uniapp.repositories.CourseRepository;
 import uniapp.repositories.LecturerRepository;
-import uniapp.services.CourseService;
+import uniapp.services.implementations.BasicCourseService;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -26,7 +26,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class CourseServiceUnitTest {
 
     @InjectMocks
-    CourseService courseService;
+    BasicCourseService courseService;
 
     @Mock
     CourseRepository courseRepository;

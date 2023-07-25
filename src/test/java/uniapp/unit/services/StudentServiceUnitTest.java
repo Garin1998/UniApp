@@ -3,7 +3,6 @@ package uniapp.unit.services;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import uniapp.controllers.requests.StudentCourseReq;
 import uniapp.controllers.requests.StudentReq;
@@ -23,7 +22,7 @@ import uniapp.models.entities.StudentCourse;
 import uniapp.repositories.CourseRepository;
 import uniapp.repositories.StudentCourseRepository;
 import uniapp.repositories.StudentRepository;
-import uniapp.services.StudentService;
+import uniapp.services.implementations.BasicStudentService;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -39,7 +38,7 @@ import static uniapp.constants.ResponseStudentMessages.*;
 class StudentServiceUnitTest {
 
     @InjectMocks
-    StudentService studentService;
+    BasicStudentService studentService;
     @Mock
     StudentRepository studentRepository;
     @Mock
